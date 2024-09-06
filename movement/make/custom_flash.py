@@ -88,10 +88,10 @@ if len(sys.argv) == 1 or sys.argv[1] in ['-h', '--help']:
 COLOR = validate_color_argument(sys.argv[1])
 
 # Validate optional install or emulate argument
-install_or_emulate = None
+make_arg = None
 if len(sys.argv) > 2:
-    if sys.argv[2] in ['install', 'emulate']:
-        install_or_emulate = sys.argv[2]
+    if sys.argv[2] in ['install', 'emulate', 'clean']:
+        make_arg = sys.argv[2]
     else:
         print(f"Error: Unrecognized option '{sys.argv[2]}'.\n{usage}")
         sys.exit(1)
@@ -113,7 +113,7 @@ for file in optional_files:
 update_date_time(necessary_files[0])
 
 # Build the firmware
-if install_or_emulate is None:
+if make_arg is None:
     print(f"\n\nBuilding with COLOR={COLOR}\n")
     result = subprocess.run(["make", f"COLOR={COLOR}"], check=False)
     if result.returncode == 0:
@@ -121,7 +121,7 @@ if install_or_emulate is None:
     else:
         print("\n\nSomething went wrong -- see `make` output above.")
         sys.exit(1)
-elif install_or_emulate == "install":
+elif make_arg == "install":
     print(f"\n\nBuilding and installing with COLOR={COLOR}\n")
     result = subprocess.run(["make", f"COLOR={COLOR}"], check=False)
     if result.returncode == 0:
@@ -134,11 +134,19 @@ elif install_or_emulate == "install":
     else:
         print("\n\nSomething went wrong -- see `make` output above.")
         sys.exit(1)
-elif install_or_emulate == "emulate":
+elif make_arg == "emulate":
     print(f"\n\nBuilding and emulating with COLOR={COLOR}\n")
     result = subprocess.run(["emmake", "make", f"COLOR={COLOR}"], check=False)
     if result.returncode == 0:
         subprocess.run(["python3", "-m", "http.server", "-d", "build-sim"], check=False)
+    else:
+        print("\n\nSomething went wrong -- see `emmake` output above.")
+        sys.exit(1)
+elif make_arg == "clean":
+    print(f"\n\nCleaning up the build\n")
+    result = subprocess.run(["make", "clean", f"COLOR={COLOR}"], check=False)
+    if result.returncode == 0:
+        print("\n\nCleanup finished successfully.")
     else:
         print("\n\nSomething went wrong -- see `emmake` output above.")
         sys.exit(1)
