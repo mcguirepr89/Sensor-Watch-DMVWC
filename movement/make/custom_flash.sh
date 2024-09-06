@@ -9,16 +9,17 @@ echo() {
 # Files and executables to check
 necessary_files=(../../watch-library/hardware/main.c Makefile)
 optional_files=(alarms.csv timers.csv timezone_offset)
-executables=(sed)
+executables=(sed python3)
 
 # Usage instructions
 usage=$(cat <<-END
 This is a helper script to build the Sensor-Watch firmware for the 
 specified board color while setting local time.
 
-Usage: $(basename "$0") [-h] {RED|GREEN|BLUE} [install]
+Usage: $(basename "$0") [-h] {RED|GREEN|BLUE} [install|emulate]
     -h|--help   Print this usage
     install     Runs 'make COLOR={RED|GREEN|BLUE} && make install COLOR={RED|GREEN|BLUE}'
+    emulate    Runs 'emmake make COLOR=RED && python3 -m http.server -d build-sim'
 END
 )
 
@@ -95,6 +96,8 @@ fi
 if [[ -n "$2" ]];then
     if [[ "$2" == "install" ]];then
         echo "Installing after make"
+    elif [[ "$2" == "emulate" ]];then
+        echo "Building for the emulator"
     else
         echo "Error: Unrecognized option '$2'. See $(basename "$0") -h for more info."
         exit 1
@@ -139,9 +142,9 @@ sed -Ei "
     s/(unit.hour = ).*(;)/\1$HOUR\2/;
     s/(unit.minute = ).*(;)/\1$MINUTE\2/" "${necessary_files[0]}"
 
-# Build (and optionally install) the firmware
-echo "\n\nBuilding${2:+ and installing} with COLOR=$COLOR\n"
+# Build the firmware
 if [[ -z "$2" ]]; then
+    echo "\n\nBuilding with COLOR=$COLOR\n"
     if make COLOR="$COLOR"; then
         echo "\n\nFirmware successfully built!!!!"
     else
@@ -149,10 +152,16 @@ if [[ -z "$2" ]]; then
         exit 1
     fi
 else
-    if make COLOR="$COLOR" && make install COLOR="$COLOR"; then
-        echo "\n\nFirmware successfully built and installed!!!!"
-    else
-        echo "\n\nSomething went wrong -- see \`make install\` output above."
-        exit 1
+    if [[ "$2" == "install" ]];then
+    echo "\n\nBuilding and installing with COLOR=$COLOR\n"
+        if make COLOR="$COLOR" && make install COLOR="$COLOR"; then
+            echo "\n\nFirmware successfully built and installed!!!!"
+        else
+            echo "\n\nSomething went wrong -- see \`make install\` output above."
+            exit 1
+        fi
+    elif [[ "$2" == "emulate" ]];then
+        echo "\n\nBuilding and emulating with COLOR=$COLOR\n"
+        emmake make COLOR="$COLOR" && python3 -m http.server -d build-sim
     fi
 fi
