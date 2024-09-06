@@ -46,6 +46,18 @@ void kegging_face_activate(movement_settings_t *settings, void *context) {
 
 static void display_keg_counts(uint8_t half_kegs, uint8_t sixtels) {
     char buf[14];
+    float total_bbls = (half_kegs / 2.0f) + (sixtels / 6.0f);
+    float remaining_bbls = 20.0f - total_bbls;
+    if (remaining_bbls < 2) {
+        watch_set_indicator(WATCH_INDICATOR_SIGNAL);
+    } else {
+        watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
+    }
+    if (remaining_bbls <= 0) {
+        watch_set_indicator(WATCH_INDICATOR_BELL);
+    } else {
+        watch_clear_indicator(WATCH_INDICATOR_BELL);
+    }
     sprintf(buf, "H  s%-3d%3d", half_kegs, sixtels);
     watch_display_string(buf, 0);
 }
@@ -72,6 +84,7 @@ static void display_bbl_info(uint8_t half_kegs, uint8_t sixtels, bool show_remai
     char buf[14];
     if (show_remaining) {
         float remaining_bbls = 20.0f - total_bbls;
+        if (remaining_bbls < 2) watch_set_indicator(WATCH_INDICATOR_SIGNAL);
         sprintf(buf, "ch  %3f", remaining_bbls);
     } else {
         sprintf(buf, "br  %3f", total_bbls);
