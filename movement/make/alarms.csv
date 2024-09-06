@@ -1,0 +1,7 @@
+alarm_idx,day,hour,minute,beeps,pitch,enabled
+0,ALARM_DAY_WORKDAY,16,30,10,1,true
+1,1,16,25,10,1,true
+2,ALARM_DAY_WORKDAY,6,0,8,1,true
+3,ALARM_DAY_WORKDAY,6,34,2,1,true
+4,2,16,50,10,1,true
+5,ALARM_DAY_EACH_DAY,18,0,10,1,true
