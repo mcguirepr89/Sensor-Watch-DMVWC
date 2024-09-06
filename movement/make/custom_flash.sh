@@ -87,9 +87,9 @@ fi
 if [[ -z "$1" ]]; then
     echo "$usage"
     exit 1
+else
+    validate_color_argument "$1"
 fi
-
-validate_color_argument "$1"
 
 # Ensure install argument is valid if provided
 if [[ -n "$2" ]];then
@@ -132,7 +132,12 @@ MINUTE="$(( $(date +%-M) + 1 ))"
 
 # Update local time in the RTC
 echo "\nSetting current time in ${necessary_files[0]} to \"$HOUR:$MINUTE $DAY/$MONTH/202$YEAR\"\n"
-sed -Ei "s/(unit.year = ).*(;)/\1$YEAR\2/;s/(unit.month = ).*(;)/\1$MONTH\2/;s/(unit.day = ).*(;)/\1$DAY\2/;s/(unit.hour = ).*(;)/\1$HOUR\2/;s/(unit.minute = ).*(;)/\1$MINUTE\2/" "${necessary_files[0]}"
+sed -Ei "
+    s/(unit.year = ).*(;)/\1$YEAR\2/;
+    s/(unit.month = ).*(;)/\1$MONTH\2/;
+    s/(unit.day = ).*(;)/\1$DAY\2/;
+    s/(unit.hour = ).*(;)/\1$HOUR\2/;
+    s/(unit.minute = ).*(;)/\1$MINUTE\2/" "${necessary_files[0]}"
 
 # Build (and optionally install) the firmware
 echo "\n\nBuilding${2:+ and installing} with COLOR=$COLOR\n"
