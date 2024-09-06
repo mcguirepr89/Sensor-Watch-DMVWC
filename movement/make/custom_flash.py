@@ -6,13 +6,12 @@ import sys
 import shutil
 from datetime import datetime
 
-# Define necessary files, optional files, and executables
+# Define necessary files and optional files
 necessary_files = [
     os.path.join("..", "..", "watch-library", "hardware", "main.c"), 
     "Makefile"
 ]
 optional_files = ["alarms.csv", "timers.csv", "timezone_offset"]
-executables = ["sed", "python3"]
 
 # Usage instructions
 usage = """
@@ -53,13 +52,6 @@ def check_optional_file(file):
         print(f"\t--Note: Optional file '{file_path}' not found.")
     else:
         print(f"\t--Optional file '{file_path}' found.")
-
-def check_executable(exec_name):
-    if shutil.which(exec_name) is None:
-        print(f"\t--Error: Required executable '{exec_name}' not found.")
-        sys.exit(1)
-    else:
-        print(f"\t--Executable '{exec_name}' found.")
 
 def update_date_time(file_path):
     # Get current date and time
@@ -116,11 +108,6 @@ for file in necessary_files:
 print("\nChecking for optional files\n")
 for file in optional_files:
     check_optional_file(file)
-
-# Check for required executables
-print("\nChecking for necessary executables\n")
-for exec_name in executables:
-    check_executable(exec_name)
 
 # Set date and time variables
 update_date_time(necessary_files[0])
