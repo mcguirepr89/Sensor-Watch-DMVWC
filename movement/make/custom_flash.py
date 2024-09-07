@@ -21,6 +21,7 @@ Usage: {} [-h] {{RED|GREEN|BLUE}} [install|emulate]
     -h|--help   Print this usage
     install     Runs 'make COLOR={{RED|GREEN|BLUE}} && make install COLOR={{RED|GREEN|BLUE}}'
     emulate     Runs 'emmake make COLOR=RED && python3 -m http.server -d build-sim'
+    clean       Runs 'make clean COLOR={{RED|GREEN|BLUE}}'
 """.format(os.path.basename(__file__))
 
 def validate_color_argument(color):
