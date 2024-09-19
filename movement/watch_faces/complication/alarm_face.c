@@ -56,11 +56,11 @@ static uint8_t _get_weekday_idx(watch_date_time date_time) {
     return (date_time.unit.day + 13 * (date_time.unit.month + 1) / 5 + date_time.unit.year + date_time.unit.year / 4 + 525 - 2) % 7;
 }
 
-static void _alarm_set_signal(alarm_state_t *state) {
+static void _alarm_set_bell(alarm_state_t *state) {
     if (state->alarm[state->alarm_idx].enabled)
         watch_set_indicator(WATCH_INDICATOR_BELL);
     else
-        watch_clear_indicator(WATCH_INDICATOR_BELL);
+        watch_clear_indicator(WATCH_INDICATOR_BELL;
 }
 
 static void _alarm_face_draw(movement_settings_t *settings, alarm_state_t *state, uint8_t subsecond) {
@@ -72,6 +72,7 @@ static void _alarm_face_draw(movement_settings_t *settings, alarm_state_t *state
         i = state->alarm[state->alarm_idx].day + 1;
     }
     //handle am/pm for hour display
+    bool set_leading_zero = false;
     uint8_t h = state->alarm[state->alarm_idx].hour;
     if (!settings->bit.clock_mode_24h) {
         if (h >= 12) {
@@ -81,8 +82,17 @@ static void _alarm_face_draw(movement_settings_t *settings, alarm_state_t *state
             watch_clear_indicator(WATCH_INDICATOR_PM);
         }
         if (h == 0) h = 12;
+    } else {
+        watch_set_indicator(WATCH_INDICATOR_24H);
+
+        if (settings->bit.clock_24h_leading_zero) {
+            if (h < 10) {
+                set_leading_zero = true;
+            }
+        }
     }
-    sprintf(buf, "%c%c%2d%2d%02d  ",
+
+    sprintf(buf, set_leading_zero? "%c%c%2d%02d%02d  " : "%c%c%2d%2d%02d  ",
         _dow_strings[i][0], _dow_strings[i][1],
         (state->alarm_idx + 1),
         h,
@@ -92,7 +102,7 @@ static void _alarm_face_draw(movement_settings_t *settings, alarm_state_t *state
         buf[_blink_idx[state->setting_state]] = buf[_blink_idx2[state->setting_state]] = ' ';
     }
     watch_display_string(buf, 0);
-    
+
     if (state->is_setting) {
     // draw pitch level indicator
         if ((subsecond % 2) == 0 || (state->setting_state != alarm_setting_idx_pitch)) {
@@ -113,7 +123,7 @@ static void _alarm_face_draw(movement_settings_t *settings, alarm_state_t *state
     }
 
     // set alarm indicator
-    _alarm_set_signal(state);
+    _alarm_set_bell(state);
 }
 
 static void _alarm_initiate_setting(movement_settings_t *settings, alarm_state_t *state, uint8_t subsecond) {
@@ -204,48 +214,23 @@ void alarm_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
         *context_ptr = malloc(sizeof(alarm_state_t));
         alarm_state_t *state = (alarm_state_t *)*context_ptr;
         memset(*context_ptr, 0, sizeof(alarm_state_t));
-        // initialize the default alarm values
-        state->alarm[0].day = ALARM_DAY_WORKDAY;
-        state->alarm[0].hour = 16;
-        state->alarm[0].minute = 30;
-        state->alarm[0].beeps = 10;
-        state->alarm[0].pitch = 1;
-        state->alarm[0].enabled = true;
-        state->alarm[1].day = 1;
-        state->alarm[1].hour = 16;
-        state->alarm[1].minute = 25;
-        state->alarm[1].beeps = 10;
-        state->alarm[1].pitch = 1;
-        state->alarm[1].enabled = true;
-        state->alarm[2].day = ALARM_DAY_WORKDAY;
-        state->alarm[2].hour = 6;
-        state->alarm[2].minute = 0;
-        state->alarm[2].beeps = 8;
-        state->alarm[2].pitch = 1;
-        state->alarm[2].enabled = true;
-        state->alarm[3].day = ALARM_DAY_WORKDAY;
-        state->alarm[3].hour = 6;
-        state->alarm[3].minute = 34;
-        state->alarm[3].beeps = 2;
-        state->alarm[3].pitch = 1;
-        state->alarm[3].enabled = true;
-        state->alarm[4].day = 2;
-        state->alarm[4].hour = 16;
-        state->alarm[4].minute = 50;
-        state->alarm[4].beeps = 10;
-        state->alarm[4].pitch = 1;
-        state->alarm[4].enabled = true;
-        state->alarm[5].day = ALARM_DAY_EACH_DAY;
-        state->alarm[5].hour = 18;
-        state->alarm[5].minute = 0;
-        state->alarm[5].beeps = 10;
-        state->alarm[5].pitch = 1;
-        state->alarm[5].enabled = true;
-        for (uint8_t i = 6; i < ALARM_ALARMS; i++) {
-            state->alarm[i].day = ALARM_DAY_ONE_TIME;
-            state->alarm[i].beeps = 5;
-            state->alarm[i].pitch = 1;
+        uint8_t num_presets = sizeof(alarm_presets) / sizeof(alarm_presets[0]);
+        for (uint8_t i = 0; i < ALARM_ALARMS; i++) {
+            if (i < num_presets) {
+                state->alarm[i].day = alarm_presets[i].day;
+                state->alarm[i].hour = alarm_presets[i].hour;
+                state->alarm[i].minute = alarm_presets[i].minute;
+                state->alarm[i].beeps = alarm_presets[i].beeps;
+                state->alarm[i].pitch = alarm_presets[i].pitch;
+                state->alarm[i].enabled = alarm_presets[i].enabled;
+            } else {
+                // Default values for alarms without presets
+                state->alarm[i].day = ALARM_DAY_EACH_DAY;
+                state->alarm[i].beeps = 5;
+                state->alarm[i].pitch = 1;
+            }
         }
+
         state->alarm_handled_minute = -1;
         _wait_ticks = -1;
     }
@@ -316,7 +301,7 @@ bool alarm_face_loop(movement_event_t event, movement_settings_t *settings, void
                 if (state->alarm_idx) {
                     // revert change of enabled flag and show it briefly
                     state->alarm[state->alarm_idx].enabled ^= 1;
-                    _alarm_set_signal(state);
+                    _alarm_set_bell(state);
                     delay_ms(275);
                     state->alarm_idx = 0;
                 }
