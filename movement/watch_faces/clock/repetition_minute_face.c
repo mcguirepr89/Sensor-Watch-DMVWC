@@ -69,7 +69,7 @@ void repetition_minute_face_activate(movement_settings_t *settings, void *contex
 
     if (watch_tick_animation_is_running()) watch_stop_tick_animation();
 
-    if (settings->bit.clock_mode_24h) watch_set_indicator(WATCH_INDICATOR_24H);
+    if (settings->bit.clock_mode_24h && !settings->bit.clock_24h_leading_zero) watch_set_indicator(WATCH_INDICATOR_24H);
 
     // handle chime indicator
     if (state->signal_enabled) watch_set_indicator(WATCH_INDICATOR_SIGNAL);
@@ -100,15 +100,43 @@ bool repetition_minute_face_loop(movement_event_t event, movement_settings_t *se
                 previous_date_time = state->previous_date_time;
                 state->previous_date_time = date_time.reg;
 
-                // check the battery voltage once a day...
-                if (date_time.unit.day != state->last_battery_check) {
-                    state->last_battery_check = date_time.unit.day;
-                    watch_enable_adc();
-                    uint16_t voltage = watch_get_vcc_voltage();
-                    watch_disable_adc();
-                    // 2.2 volts will happen when the battery has maybe 5-10% remaining?
-                    // we can refine this later.
-                    state->battery_low = (voltage < 2200);
+            // check the battery voltage once a day...
+            if (date_time.unit.day != state->last_battery_check) {
+                state->last_battery_check = date_time.unit.day;
+                watch_enable_adc();
+                uint16_t voltage = watch_get_vcc_voltage();
+                watch_disable_adc();
+                // 2.2 volts will happen when the battery has maybe 5-10% remaining?
+                // we can refine this later.
+                state->battery_low = (voltage < 2200);
+            }
+
+            // ...and set the LAP indicator if low.
+            if (state->battery_low) watch_set_indicator(WATCH_INDICATOR_LAP);
+
+            bool set_leading_zero = false;
+            if ((date_time.reg >> 6) == (previous_date_time >> 6) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
+                // everything before seconds is the same, don't waste cycles setting those segments.
+                watch_display_character_lp_seconds('0' + date_time.unit.second / 10, 8);
+                watch_display_character_lp_seconds('0' + date_time.unit.second % 10, 9);
+                break;
+            } else if ((date_time.reg >> 12) == (previous_date_time >> 12) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
+                // everything before minutes is the same.
+                pos = 6;
+                sprintf(buf, "%02d%02d", date_time.unit.minute, date_time.unit.second);
+            } else {
+                // other stuff changed; let's do it all.
+                if (!settings->bit.clock_mode_24h) {
+                    // if we are in 12 hour mode, do some cleanup.
+                    if (date_time.unit.hour < 12) {
+                        watch_clear_indicator(WATCH_INDICATOR_PM);
+                    } else {
+                        watch_set_indicator(WATCH_INDICATOR_PM);
+                    }
+                    date_time.unit.hour %= 12;
+                    if (date_time.unit.hour == 0) date_time.unit.hour = 12;
+                } else if (settings->bit.clock_24h_leading_zero && date_time.unit.hour < 10) {
+                    set_leading_zero = true;
                 }
 
                 // ...and set the LAP indicator if low.
@@ -148,6 +176,11 @@ bool repetition_minute_face_loop(movement_event_t event, movement_settings_t *se
                 if (state->alarm_enabled != settings->bit.alarm_enabled) _update_alarm_indicator(settings->bit.alarm_enabled, state);
                 movement_request_tick_frequency(1);
             }
+            watch_display_string(buf, pos);
+            if (set_leading_zero)
+                watch_display_string("0", 4);
+            // handle alarm indicator
+            if (state->alarm_enabled != settings->bit.alarm_enabled) _update_alarm_indicator(settings->bit.alarm_enabled, state);
             break;
         case EVENT_ALARM_LONG_UP:
             state->signal_enabled = !state->signal_enabled;
@@ -216,6 +249,7 @@ bool repetition_minute_face_loop(movement_event_t event, movement_settings_t *se
     }
 
     return true;
+}
 }
 
 void repetition_minute_face_resign(movement_settings_t *settings, void *context) {

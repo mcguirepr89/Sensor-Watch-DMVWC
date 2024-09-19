@@ -124,8 +124,8 @@ bool beer_o_clock_face_loop(movement_event_t event, movement_settings_t *setting
             break;
         case EVENT_TICK:
             if (state->tfb) {
-                printf("state->ticks = %d\n", state->ticks);
-                printf("state->alarm_count = %d\n", state->alarm_count);
+                //printf("state->ticks = %d\n", state->ticks);
+                //printf("state->alarm_count = %d\n", state->alarm_count);
                 if (state->alarm_count <= ALARM_COUNT) {
                     movement_request_tick_frequency(2);
                     switch (state->ticks % 3) {
@@ -140,7 +140,7 @@ bool beer_o_clock_face_loop(movement_event_t event, movement_settings_t *setting
                             watch_display_string("     beer ", 0);
                             movement_play_alarm();
                             state->alarm_count++;
-                            printf("state->alarm_count = %d\n", state->alarm_count);
+                            //printf("state->alarm_count = %d\n", state->alarm_count);
                             break;
                     }
                 } else {
@@ -163,7 +163,7 @@ bool beer_o_clock_face_loop(movement_event_t event, movement_settings_t *setting
                 }
             }
             state->ticks = (state->ticks + 1) % 3;
-            printf("state->ticks = %d\n", state->ticks);
+            //printf("state->ticks = %d\n", state->ticks);
             break;
         case EVENT_LIGHT_BUTTON_UP:
             if (!state->using) {

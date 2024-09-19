@@ -58,9 +58,9 @@ static uint8_t _get_weekday_idx(watch_date_time date_time) {
 
 static void _alarm_set_signal(alarm_state_t *state) {
     if (state->alarm[state->alarm_idx].enabled)
-        watch_set_indicator(WATCH_INDICATOR_SIGNAL);
+        watch_set_indicator(WATCH_INDICATOR_BELL);
     else
-        watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
+        watch_clear_indicator(WATCH_INDICATOR_BELL);
 }
 
 static void _alarm_face_draw(movement_settings_t *settings, alarm_state_t *state, uint8_t subsecond) {
