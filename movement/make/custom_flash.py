@@ -11,7 +11,6 @@ necessary_files = [
     os.path.join("..", "..", "watch-library", "hardware", "main.c"), 
     "Makefile"
 ]
-optional_files = ["alarms.csv", "timers.csv", "timezone_offset"]
 
 # Usage instructions
 usage = """
@@ -104,11 +103,6 @@ ensure_correct_directory()
 print("\nChecking for necessary files\n")
 for file in necessary_files:
     check_file(file)
-
-# Check for optional files
-print("\nChecking for optional files\n")
-for file in optional_files:
-    check_optional_file(file)
 
 # Set date and time variables
 update_date_time(necessary_files[0])
