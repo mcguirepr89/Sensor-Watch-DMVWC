@@ -60,7 +60,7 @@ static void _alarm_set_bell(alarm_state_t *state) {
     if (state->alarm[state->alarm_idx].enabled)
         watch_set_indicator(WATCH_INDICATOR_BELL);
     else
-        watch_clear_indicator(WATCH_INDICATOR_BELL;
+        watch_clear_indicator(WATCH_INDICATOR_BELL);
 }
 
 static void _alarm_face_draw(movement_settings_t *settings, alarm_state_t *state, uint8_t subsecond) {
@@ -225,7 +225,7 @@ void alarm_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
                 state->alarm[i].enabled = alarm_presets[i].enabled;
             } else {
                 // Default values for alarms without presets
-                state->alarm[i].day = ALARM_DAY_EACH_DAY;
+                state->alarm[i].day = ALARM_DAY_ONE_TIME;
                 state->alarm[i].beeps = 5;
                 state->alarm[i].pitch = 1;
             }
