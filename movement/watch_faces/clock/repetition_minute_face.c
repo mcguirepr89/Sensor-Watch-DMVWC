@@ -181,6 +181,7 @@ bool repetition_minute_face_loop(movement_event_t event, movement_settings_t *se
                 watch_display_string("0", 4);
             // handle alarm indicator
             if (state->alarm_enabled != settings->bit.alarm_enabled) _update_alarm_indicator(settings->bit.alarm_enabled, state);
+            }
             break;
         case EVENT_ALARM_LONG_UP:
             state->signal_enabled = !state->signal_enabled;
@@ -249,7 +250,6 @@ bool repetition_minute_face_loop(movement_event_t event, movement_settings_t *se
     }
 
     return true;
-}
 }
 
 void repetition_minute_face_resign(movement_settings_t *settings, void *context) {
