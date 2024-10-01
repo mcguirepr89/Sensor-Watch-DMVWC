@@ -191,12 +191,11 @@ bool repetition_minute_face_loop(movement_event_t event, movement_settings_t *se
         case EVENT_ALARM_REALLY_LONG_PRESS:
             state->easter_egg = true;
             watch_clear_display();
-            watch_display_string("WC   dm&V", 0);
+            watch_display_string("    sleep", 0);
             break;
         case EVENT_ALARM_REALLY_LONG_UP:
             state->easter_egg = false;
-            state->previous_date_time = 0xFFFFFFFF;
-            movement_move_to_face(state->watch_face_index);
+            movement_request_sleep();
             break;
         case EVENT_BACKGROUND_TASK:
             // uncomment this line to snap back to the clock face when the hour signal sounds:
