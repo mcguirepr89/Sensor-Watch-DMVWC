@@ -45,12 +45,6 @@ void play_minute_chime(void) {
         watch_buzzer_play_note(BUZZER_NOTE_REST, 500);
 }
 
-static void _update_alarm_indicator(bool settings_alarm_enabled, repetition_minute_state_t *state) {
-    state->alarm_enabled = settings_alarm_enabled;
-    if (state->alarm_enabled) watch_set_indicator(WATCH_INDICATOR_BELL);
-    else watch_clear_indicator(WATCH_INDICATOR_BELL);
-}
-
 void repetition_minute_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
@@ -66,6 +60,7 @@ void repetition_minute_face_setup(movement_settings_t *settings, uint8_t watch_f
 
 void repetition_minute_face_activate(movement_settings_t *settings, void *context) {
     repetition_minute_state_t *state = (repetition_minute_state_t *)context;
+    state->alarm_enabled = false;
 
     if (watch_tick_animation_is_running()) watch_stop_tick_animation();
 
@@ -76,7 +71,8 @@ void repetition_minute_face_activate(movement_settings_t *settings, void *contex
     else watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
 
     // show alarm indicator if there is an active alarm
-    _update_alarm_indicator(settings->bit.alarm_enabled, state);
+    if (settings->bit.alarm_enabled) watch_set_indicator(WATCH_INDICATOR_BELL);
+    else watch_clear_indicator(WATCH_INDICATOR_BELL);
 
     watch_set_colon();
 
@@ -150,7 +146,10 @@ bool repetition_minute_face_loop(movement_event_t event, movement_settings_t *se
             if (set_leading_zero)
                 watch_display_string("0", 4);
             // handle alarm and signal indicators
-            if (state->alarm_enabled != settings->bit.alarm_enabled) _update_alarm_indicator(settings->bit.alarm_enabled, state);
+            if (settings->bit.alarm_enabled) watch_set_indicator(WATCH_INDICATOR_BELL);
+            else watch_clear_indicator(WATCH_INDICATOR_BELL);
+            if (state->signal_enabled) watch_set_indicator(WATCH_INDICATOR_SIGNAL);
+            else watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
             }
             break;
         case EVENT_ALARM_LONG_UP:
