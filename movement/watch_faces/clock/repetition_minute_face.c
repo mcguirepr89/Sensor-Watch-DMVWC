@@ -138,48 +138,18 @@ bool repetition_minute_face_loop(movement_event_t event, movement_settings_t *se
                 } else if (settings->bit.clock_24h_leading_zero && date_time.unit.hour < 10) {
                     set_leading_zero = true;
                 }
-
-                // ...and set the LAP indicator if low.
-                if (state->battery_low) watch_set_indicator(WATCH_INDICATOR_LAP);
-
-                if ((date_time.reg >> 6) == (previous_date_time >> 6) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
-                    // everything before seconds is the same, don't waste cycles setting those segments.
-                    watch_display_character_lp_seconds('0' + date_time.unit.second / 10, 8);
-                    watch_display_character_lp_seconds('0' + date_time.unit.second % 10, 9);
-                    break;
-                } else if ((date_time.reg >> 12) == (previous_date_time >> 12) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
-                    // everything before minutes is the same.
-                    pos = 6;
-                    sprintf(buf, "%02d%02d", date_time.unit.minute, date_time.unit.second);
+                pos = 0;
+                if (event.event_type == EVENT_LOW_ENERGY_UPDATE) {
+                    if (!watch_tick_animation_is_running()) watch_start_tick_animation(500);
+                    sprintf(buf, "%s%2d%2d%02d  ", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute);
                 } else {
-                    // other stuff changed; let's do it all.
-                    if (!settings->bit.clock_mode_24h) {
-                        // if we are in 12 hour mode, do some cleanup.
-                        if (date_time.unit.hour < 12) {
-                            watch_clear_indicator(WATCH_INDICATOR_PM);
-                        } else {
-                            watch_set_indicator(WATCH_INDICATOR_PM);
-                        }
-                        date_time.unit.hour %= 12;
-                        if (date_time.unit.hour == 0) date_time.unit.hour = 12;
-                    }
-                    pos = 0;
-                    if (event.event_type == EVENT_LOW_ENERGY_UPDATE) {
-                        if (!watch_tick_animation_is_running()) watch_start_tick_animation(500);
-                        sprintf(buf, "%s%2d%2d%02d  ", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute);
-                    } else {
-                        sprintf(buf, "%s%2d%2d%02d%02d", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
-                    }
+                    sprintf(buf, "%s%2d%2d%02d%02d", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
                 }
-                watch_display_string(buf, pos);
-                // handle alarm indicator
-                if (state->alarm_enabled != settings->bit.alarm_enabled) _update_alarm_indicator(settings->bit.alarm_enabled, state);
-                movement_request_tick_frequency(1);
             }
             watch_display_string(buf, pos);
             if (set_leading_zero)
                 watch_display_string("0", 4);
-            // handle alarm indicator
+            // handle alarm and signal indicators
             if (state->alarm_enabled != settings->bit.alarm_enabled) _update_alarm_indicator(settings->bit.alarm_enabled, state);
             }
             break;
