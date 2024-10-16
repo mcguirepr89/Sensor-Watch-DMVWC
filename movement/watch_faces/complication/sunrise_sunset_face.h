@@ -58,6 +58,13 @@ typedef struct {
     uint8_t longLatToUse;
 } sunrise_sunset_state_t;
 
+typedef struct {
+    int timestamp;
+    watch_date_time *event;
+    const char *name;
+    const char *abreviation;
+} SolarEvent;
+
 void sunrise_sunset_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
 void sunrise_sunset_face_activate(movement_settings_t *settings, void *context);
 bool sunrise_sunset_face_loop(movement_event_t event, movement_settings_t *settings, void *context);
