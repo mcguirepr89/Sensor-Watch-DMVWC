@@ -30,19 +30,23 @@
 const watch_face_t watch_faces[] = {
     // Primary Faces
 	repetition_minute_face,
-	wyoscan_face,
 	timer_face,
 	alarm_face,
 	stock_stopwatch_face,
     simple_calculator_face,
-    beer_o_clock_face,
-    kegging_face,
-	sunrise_sunset_face,
-	moon_phase_face,
-	simple_coin_flip_face,
-	probability_face,
 	world_clock2_face,
     //// Secondary Faces
+	moon_phase_face,
+	sunrise_sunset_alt_face,
+    metronome_face,
+	simple_coin_flip_face,
+	probability_face,
+    kegging_face,
+    beer_o_clock_face,
+	wyoscan_face,
+    deadline_face,
+    endless_runner_face,
+    //// Tertiary Faces
 	voltage_face,
 	thermistor_readout_face,
 	preferences_face,
@@ -147,8 +151,8 @@ const watch_face_t watch_faces[] = {
  * Some folks also like to use this to hide the preferences and time set faces from the normal rotation.
  * If you don't want any faces to be excluded, set this to 0 and a long Mode press will have no effect.
  */
-#define MOVEMENT_SECONDARY_FACE_INDEX (MOVEMENT_NUM_FACES - 6) // or (0)
-//#define MOVEMENT_SECONDARY_FACE_INDEX (0) // or (0)
+#define MOVEMENT_SECONDARY_FACE_INDEX (MOVEMENT_NUM_FACES - 16) // or (0)
+#define MOVEMENT_TERTIARY_FACE_INDEX (MOVEMENT_NUM_FACES - 6) // or (0)
 
 /* Custom hourly chime tune. Check movement_custom_signal_tunes.h for options. */
 //#define SIGNAL_TUNE_DEFAULT
