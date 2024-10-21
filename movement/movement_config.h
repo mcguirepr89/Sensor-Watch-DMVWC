@@ -36,8 +36,8 @@ const watch_face_t watch_faces[] = {
     simple_calculator_face,
 	world_clock2_face,
     //// Secondary Faces
-	moon_phase_face,
 	sunrise_sunset_alt_face,
+	moon_phase_face,
     metronome_face,
 	simple_coin_flip_face,
 	probability_face,
