@@ -427,7 +427,7 @@ bool alarm_face_loop(movement_event_t event, movement_settings_t *settings, void
         }
         // one time alarm? -> erase it
         if (state->alarm[state->alarm_playing_idx].day == ALARM_DAY_ONE_TIME) {
-            state->alarm[state->alarm_playing_idx].day = ALARM_DAY_EACH_DAY;
+            state->alarm[state->alarm_playing_idx].day = ALARM_DAY_ONE_TIME;
             state->alarm[state->alarm_playing_idx].minute = state->alarm[state->alarm_playing_idx].hour = 0;
             state->alarm[state->alarm_playing_idx].beeps = 5;
             state->alarm[state->alarm_playing_idx].pitch = 1;
