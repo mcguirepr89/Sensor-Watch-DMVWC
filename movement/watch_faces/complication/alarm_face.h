@@ -77,7 +77,6 @@ typedef struct {
 static const alarm_setting_t alarm_presets[] = {
     { ALARM_DAY_WORKDAY, 6, 15, 3, 1, true }, // day, hour, minute, beeps, pitch, enabled
     { ALARM_DAY_WORKDAY, 6, 20, 2, 1, true },
-    { ALARM_DAY_WORKDAY, 16, 30, 5, 1, true },
     { 1, 17, 25, 10, 1, true },
     { 3, 17, 10, 10, 1, true },
     { ALARM_DAY_EACH_DAY, 18, 0, 10, 1, true }, // day, hour, minute, beeps, pitch, enabled
