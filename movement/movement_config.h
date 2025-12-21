@@ -29,97 +29,64 @@
 
 const watch_face_t watch_faces[] = {
 
-    // Complications
+    //// Set 1
+    repetition_minute_face, 
+    alarm_face, 
+    timer_face, 
+    stock_stopwatch_face, 
+    day_night_percentage_face, 
+    sunrise_sunset_alt_face, 
+
+    //// Set 2
+    tomato_face, 
+    minimal_clock_face, 
+    wyoscan_face, 
+    close_enough_clock_face, 
+
     //// Games
-    higher_lower_game_face,
-    invaders_face,
-    endless_runner_face,
-    butterfly_game_face,
-    simon_face,
-    wordle_face,
+    endless_runner_face, 
+    butterfly_game_face, 
+    simon_face, 
 
     //// Celestial
-    solstice_face,
-    astronomy_face,
-    planetary_time_face,
-    planetary_hours_face,
-    moon_phase_face,
-    sunrise_sunset_alt_face,
+    moon_phase_face, 
 
     //// Lifestyle
-    wareki_face,
-    breathing_face,
-    beer_o_clock_face,
-    tarot_face,
-    menstrual_cycle_face,
-    kitchen_conversions_face,
-    habit_face,
-    activity_face,
-    pulsometer_face,
+    breathing_face, 
+    beer_o_clock_face, 
+    kitchen_conversions_face, 
 
     //// Time based
-    countdown_face,
-    stock_stopwatch_face,
-    alarm_face,
-    wake_face,
-    timer_face,
-    time_left_face,
-    deadline_face,
-    day_one_face,
+    countdown_face, 
+    time_left_face, 
+    deadline_face, 
 
     //// Randomize
-    probability_face,
-    simple_coin_flip_face,
-    geomancy_face,
-    toss_up_face,
-    tomato_face,
+    probability_face, 
+    simple_coin_flip_face, 
+    geomancy_face, 
 
     //// Tracking
-    ratemeter_face,
-    blinky_face,
-    tally_face,
+    ratemeter_face, 
+    blinky_face, 
 
     //// Tools
-    simple_calculator_face,
-    flashlight_face,
-    metronome_face,
-    tachymeter_face,
-    counter_face,
-    totp_face,
-    totp_face_lfs,
+    simple_calculator_face, 
+    metronome_face, 
+    counter_face, 
 
     //// Reference
-    periodic_face,
-    databank_face,
-
-    // Clocks
-    //// Conventional
-    simple_clock_face,
-    minimal_clock_face,
-    wyoscan_face,
-    weeknumber_clock_face,
-    ships_bell_face,
-    minute_repeater_decimal_face,
-    repetition_minute_face,
-    world_clock2_face,
-
-    //// Unconventional
-    close_enough_clock_face,
-    french_revolutionary_face,
-    beats_face,
-    day_night_percentage_face,
-    decimal_time_face,
-    mars_time_face,
+    periodic_face, 
 
     // Settings
-    voltage_face,
-    nanosec_face,
-    finetune_face,
-    set_time_hackwatch_face,
-    preferences_face,
+    voltage_face, 
+    nanosec_face, 
+    finetune_face, 
+    set_time_hackwatch_face, 
+    preferences_face, 
 
     // Sensor
-    thermistor_readout_face,
+    thermistor_readout_face, 
 };
 
 #define MOVEMENT_NUM_FACES (sizeof(watch_faces) / sizeof(watch_face_t))
@@ -130,7 +97,7 @@ const watch_face_t watch_faces[] = {
  * Some folks also like to use this to hide the preferences and time set faces from the normal rotation.
  * If you don't want any faces to be excluded, set this to 0 and a long Mode press will have no effect.
  */
-#define MOVEMENT_SECONDARY_FACE_INDEX (MOVEMENT_NUM_FACES - 16) // or (0)
+#define MOVEMENT_SECONDARY_FACE_INDEX (MOVEMENT_NUM_FACES - 29) // or (0)
 #define MOVEMENT_TERTIARY_FACE_INDEX (MOVEMENT_NUM_FACES - 6) // or (0)
 
 /* Custom hourly chime tune. Check movement_custom_signal_tunes.h for options. */
